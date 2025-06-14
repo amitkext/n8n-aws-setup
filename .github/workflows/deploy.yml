@@ -31,6 +31,26 @@ jobs:
         aws-region: us-east-1
         #aws-region: ${{ env.AWS_REGION }}
 
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.5.0 # Or desired version
+
+    - name: Terraform Init
+      run: terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET_NAME }}" -backend-config="key=n8n/terraform.tfstate" -backend-config="region=${{ env.AWS_REGION }}" -backend-config="dynamodb_table=${{ secrets.TF_LOCK_TABLE_NAME }}"
+      working-directory: ./terraform
+      env:
+        TF_STATE_BUCKET_NAME: your-n8n-terraform-state # Replace
+        TF_LOCK_TABLE_NAME: your-n8n-terraform-state # Replace
+
+    - name: Terraform Plan
+      run: terraform plan -var "container_image_tag=${{ github.sha }}" -var "db_password=${{ secrets.TF_VAR_DB_PASSWORD }}" -var "n8n_encryption_key=${{ secrets.TF_VAR_N8N_ENCRYPTION_KEY }}" -var "acm_certificate_arn=${{ secrets.TF_VAR_ACM_CERTIFICATE_ARN }}"
+      working-directory: ./terraform
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve -var "container_image_tag=${{ github.sha }}" -var "db_password=${{ secrets.TF_VAR_DB_PASSWORD }}" -var "n8n_encryption_key=${{ secrets.TF_VAR_N8N_ENCRYPTION_KEY }}" -var "acm_certificate_arn=${{ secrets.TF_VAR_ACM_CERTIFICATE_ARN }}"
+      working-directory: ./terraform
+
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
@@ -52,26 +72,6 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
         # echo "::set-output name=image::$(echo $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG)"
-
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.5.0 # Or desired version
-
-    - name: Terraform Init
-      run: terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET_NAME }}" -backend-config="key=n8n/terraform.tfstate" -backend-config="region=${{ env.AWS_REGION }}" -backend-config="dynamodb_table=${{ secrets.TF_LOCK_TABLE_NAME }}"
-      working-directory: ./terraform
-      env:
-        TF_STATE_BUCKET_NAME: your-n8n-terraform-state # Replace
-        TF_LOCK_TABLE_NAME: your-n8n-terraform-state # Replace
-
-    - name: Terraform Plan
-      run: terraform plan -var "container_image_tag=${{ github.sha }}" -var "db_password=${{ secrets.TF_VAR_DB_PASSWORD }}" -var "n8n_encryption_key=${{ secrets.TF_VAR_N8N_ENCRYPTION_KEY }}" -var "acm_certificate_arn=${{ secrets.TF_VAR_ACM_CERTIFICATE_ARN }}"
-      working-directory: ./terraform
-
-    - name: Terraform Apply
-      run: terraform apply -auto-approve -var "container_image_tag=${{ github.sha }}" -var "db_password=${{ secrets.TF_VAR_DB_PASSWORD }}" -var "n8n_encryption_key=${{ secrets.TF_VAR_N8N_ENCRYPTION_KEY }}" -var "acm_certificate_arn=${{ secrets.TF_VAR_ACM_CERTIFICATE_ARN }}"
-      working-directory: ./terraform
 
     - name: Get ALB DNS Name
       id: get_alb_dns
