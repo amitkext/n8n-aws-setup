@@ -543,7 +543,7 @@ resource "aws_ecs_service" "n8n" {
   }
 
   depends_on = [
-    aws_lb_listener.https,
+#    aws_lb_listener.https,
     aws_db_instance.n8n_db
   ]
 
