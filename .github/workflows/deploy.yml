@@ -11,7 +11,7 @@ env:
   ECR_REPOSITORY: n8n # Match your Terraform `project_name`-n8n-repo
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     environment: development # Or a suitable environment name
     permissions:
@@ -39,7 +39,8 @@ jobs:
       id: set_repo_name
       run: |
         PROJECT_NAME="n8n"
-        echo "ECR_REPOSITORY=${PROJECT_NAME}-n8n-repo"
+        echo "ECR_REPOSITORY=${PROJECT_NAME}-n8n-repo" >> $GITHUB_ENV
+        #echo "ECR_REPOSITORY=${PROJECT_NAME}-n8n-repo"
 
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
