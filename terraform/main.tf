@@ -243,7 +243,7 @@ resource "aws_db_subnet_group" "main" {
 resource "aws_db_instance" "n8n_db" {
   allocated_storage    = 20
   engine               = "postgres"
-  engine_version       = "14.7" # Or a desired version
+  engine_version       = "13.15" # Or a desired version
   instance_class       = "db.t3.micro" # Adjust based on your needs
   identifier           = "${var.project_name}-n8n-db"
   username             = var.db_user
@@ -404,21 +404,21 @@ resource "aws_lb_listener" "http" {
 }
 
 # HTTPS Listener
-resource "aws_lb_listener" "https" {
-  load_balancer_arn = aws_lb.n8n_alb.arn
-  port              = 443
-  protocol          = "HTTPS"
+# resource "aws_lb_listener" "https" {
+#  load_balancer_arn = aws_lb.n8n_alb.arn
+#  port              = 443
+#  protocol          = "HTTPS"
   # IMPORTANT: Replace with a valid ACM certificate ARN
   # You'll need to manually provision an ACM certificate beforehand.
   # For testing, you could get a free cert for a custom domain via ACM,
   # or omit this listener if you're OK with HTTP for now.
-  certificate_arn   = var.acm_certificate_arn # This variable needs to be added to variables.tf and populated
+#  certificate_arn   = var.acm_certificate_arn # This variable needs to be added to variables.tf and populated
 
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.n8n_tg.arn
-  }
-}
+#  default_action {
+#    type             = "forward"
+#    target_group_arn = aws_lb_target_group.n8n_tg.arn
+#  }
+# }
 
 
 # ECS Task Definition
