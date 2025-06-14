@@ -44,7 +44,8 @@ jobs:
         TF_LOCK_TABLE_NAME: your-n8n-terraform-state # Replace
 
     - name: Terraform Plan
-      run: terraform plan -var "container_image_tag=${{ github.sha }}" -var "db_password=${{ secrets.TF_VAR_DB_PASSWORD }}" -var "n8n_encryption_key=${{ secrets.TF_VAR_N8N_ENCRYPTION_KEY }}" -var "acm_certificate_arn=${{ secrets.TF_VAR_ACM_CERTIFICATE_ARN }}"
+      run: terraform plan -var "container_image_tag=${{ github.sha }}" -var "db_password=${{ secrets.TF_VAR_DB_PASSWORD }}" -var "n8n_encryption_key=${{ secrets.TF_VAR_N8N_ENCRYPTION_KEY }}"
+      #run: terraform plan -var "container_image_tag=${{ github.sha }}" -var "db_password=${{ secrets.TF_VAR_DB_PASSWORD }}" -var "n8n_encryption_key=${{ secrets.TF_VAR_N8N_ENCRYPTION_KEY }}" -var "acm_certificate_arn=${{ secrets.TF_VAR_ACM_CERTIFICATE_ARN }}"
       working-directory: ./terraform
 
     - name: Terraform Apply
