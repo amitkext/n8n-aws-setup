@@ -394,12 +394,13 @@ resource "aws_lb_listener" "http" {
   port              = 80
   protocol          = "HTTP"
   default_action {
-    type             = "redirect"
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.n8n_tg.arn
+#    redirect {
+#      port        = "443"
+#      protocol    = "HTTPS"
+#      status_code = "HTTP_301"
+#    }
   }
 }
 
@@ -542,10 +543,10 @@ resource "aws_ecs_service" "n8n" {
     container_port   = 5678
   }
 
-#  depends_on = [
-#    aws_lb_listener.https,
-#    aws_db_instance.n8n_db
-#  ]
+  depends_on = [
+    aws_lb_listener.http,
+    aws_db_instance.n8n_db
+  ]
 
   tags = {
     Name = "${var.project_name}-n8n-service"
