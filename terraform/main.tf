@@ -569,7 +569,6 @@ data "aws_availability_zones" "available" {
   # and get an ACM certificate for that custom domain.
 #}
 
-
 # Define a policy that allows reading the specific secrets
 resource "aws_iam_policy" "ecs_secrets_read_policy" {
   name        = "${var.project_name}-ecs-secrets-read-policy"
