@@ -568,3 +568,51 @@ data "aws_availability_zones" "available" {
   # For a real application, you'd associate a custom domain with the ALB
   # and get an ACM certificate for that custom domain.
 #}
+
+# Define a policy that allows reading the specific secrets
+resource "aws_iam_policy" "ecs_secrets_read_policy" {
+  name        = "${var.project_name}-ecs-secrets-read-policy"
+  description = "Allows ECS Task Execution Role to read n8n secrets"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          # Include any other secretsmanager actions if needed, like DescribeSecret
+          # but GetSecretValue is the one specifically requested here.
+        ]
+        Resource = [
+          aws_secretsmanager_secret.db_password.arn,
+          aws_secretsmanager_secret.n8n_encryption_key.arn,
+          # Add any other secrets your n8n container needs to read via secrets manager
+        ]
+      },
+      # Also needed for ECR pull if not already covered:
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetAuthorizationToken" # Essential for pulling images
+        ]
+        Resource = "*" # ECR actions often require * or specific repo ARN if limited
+      }
+    ]
+  })
+}
+
+# Attach the secrets read policy to the ECS Task Execution Role
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_secrets_attachment" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = aws_iam_policy.ecs_secrets_read_policy.arn
+}
+
+# (You likely already have the AWS managed ECS task execution policy attached)
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_managed_policy" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
