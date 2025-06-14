@@ -542,10 +542,10 @@ resource "aws_ecs_service" "n8n" {
     container_port   = 5678
   }
 
-  depends_on = [
+#  depends_on = [
 #    aws_lb_listener.https,
-    aws_db_instance.n8n_db
-  ]
+#    aws_db_instance.n8n_db
+#  ]
 
   tags = {
     Name = "${var.project_name}-n8n-service"
