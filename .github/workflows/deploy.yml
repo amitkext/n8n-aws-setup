@@ -62,8 +62,7 @@ jobs:
       run: |
         PROJECT_NAME="n8n"
         echo "ECR_REPOSITORY=${PROJECT_NAME}-n8n-repo" >> $GITHUB_ENV
-        #echo "ECR_REPOSITORY=${PROJECT_NAME}-n8n-repo"
-
+        
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:

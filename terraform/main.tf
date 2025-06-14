@@ -100,7 +100,7 @@ resource "aws_route_table_association" "private" {
 
 # ECR Repository
 resource "aws_ecr_repository" "n8n" {
-  name = "n8n"
+  name = "n8n-n8n-repo"
   # name = "${var.project_name}-n8n-repo"
   image_tag_mutability = "MUTABLE"
 
