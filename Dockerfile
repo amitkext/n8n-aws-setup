@@ -68,8 +68,3 @@ CMD ["n8n", "start"]
 # replace it, improving application reliability.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD wget --spider -q http://localhost:${N8N_PORT}/healthz || exit 1
-
-# Optional: Add labels for image metadata (useful for tracing/management)
-LABEL org.opencontainers.image.source="https://github.com/your-org/your-n8n-repo"
-LABEL org.opencontainers.image.description="n8n instance deployed on AWS"
-LABEL org.opencontainers.image.licenses="MIT" # Or your actual license
