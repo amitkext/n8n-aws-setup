@@ -1,0 +1,14 @@
+.git
+.github/
+.vscode/
+node_modules/
+npm-debug.log
+# Any other local development files or directories that should NOT be in the final image
+# e.g., if you have a 'data' folder locally, exclude it:
+data/
+# If you have custom nodes/files that are NOT part of the official n8n build, exclude them for now
+rancid/
+observium/
+custom-nodes/
+# If your n8n workflows are stored locally and shouldn't be baked into the image
+workflows/
